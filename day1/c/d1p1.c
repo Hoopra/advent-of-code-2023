@@ -50,7 +50,7 @@ int main()
     int bufferLength = 255;
     char buffer[bufferLength];
 
-    filePointer = fopen("input.txt", "r");
+    filePointer = fopen("../../input_d1.txt", "r");
 
     int sum = 0;
     int lines = 0;
