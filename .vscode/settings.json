@@ -1,0 +1,19 @@
+{
+  "editor.useTabStops": true,
+  "workbench.editor.showTabs": "multiple",
+  "git.mergeEditor": false,
+
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  "editor.formatOnSave": true,
+
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.tabSize": 2,
+
+  "[c]": {
+    "editor.defaultFormatter": "ms-vscode.cpptools",
+    "editor.tabSize": 4
+  }
+}
