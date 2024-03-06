@@ -30,17 +30,17 @@ fn concat_chars_to_number(first: char, last: char) -> String {
     number
 }
 
-fn find_digit_from_start<'a>(input: &'a str) -> char {
+fn find_digit_from_start(input: &str) -> char {
     find_digit(input.chars())
 }
 
-fn find_digit_from_end<'a>(input: &'a str) -> char {
+fn find_digit_from_end(input: &str) -> char {
     find_digit(input.chars().rev())
 }
 
 fn find_digit(chars: impl Iterator<Item = char>) -> char {
     for character in chars {
-        if character.is_digit(10) {
+        if character.is_ascii_digit() {
             return character;
         }
     }
