@@ -25,5 +25,8 @@
     "stdio.h": "c"
   },
 
-  "rust-analyzer.linkedProjects": ["day1/rust/Cargo.toml"]
+  "rust-analyzer.linkedProjects": [
+    "day1/rust/Cargo.toml",
+    "day2/rust/Cargo.toml"
+  ]
 }
