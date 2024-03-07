@@ -40,7 +40,6 @@ int digitsToNumber(char first, char last)
 
     int parsed = atoi(number);
 
-    printf("NUMBER: %s %d\n", number, parsed);
     return parsed;
 }
 
@@ -50,7 +49,7 @@ int main()
     int bufferLength = 255;
     char buffer[bufferLength];
 
-    filePointer = fopen("../../input_d1.txt", "r");
+    filePointer = fopen("../input.txt", "r");
 
     int sum = 0;
     int lines = 0;
@@ -64,9 +63,6 @@ int main()
 
         sum += parsed;
         lines++;
-
-        printf("buffer (%d) %s", lines, buffer);
-        printf("digits (%d) (%c %c): %d\n", lines, firstDigit, lastDigit, parsed);
     }
 
     printf("\ntotal lines: %d", lines);

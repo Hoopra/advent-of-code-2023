@@ -1,16 +1,6 @@
 use std::{collections::HashMap, fs::read_to_string};
 
-#[derive(Debug)]
-struct DigitResult {
-    value: char,
-    index: usize,
-}
-
-impl DigitResult {
-    fn new(value: char, index: usize) -> DigitResult {
-        DigitResult { index, value }
-    }
-}
+type DigitResult = (usize, char);
 
 pub fn solve_day_1_part_2(file_path: &str) {
     let file = read_to_string(file_path).unwrap();
@@ -50,59 +40,49 @@ fn find_calibration_digits(input: &str) -> (char, char) {
 }
 
 fn find_digit_left(input: &str) -> char {
-    let chars: Vec<char> = input.chars().collect();
+    let (numerical_index, numerical_value) = find_numerical_digit_left(input);
+    let (spelled_index, spelled_value) = find_spelled_digit_left(input);
 
-    let numerical = find_numerical_digit_left(&chars);
-    let spelled = find_spelled_digit_left(&chars);
-
-    if numerical.index <= spelled.index {
-        return numerical.value;
+    match numerical_index <= spelled_index {
+        true => numerical_value,
+        false => spelled_value,
     }
-
-    spelled.value
 }
 
 fn find_digit_right(input: &str) -> char {
-    let chars: Vec<char> = input.chars().collect();
+    let (numerical_index, numerical_value) = find_numerical_digit_right(input);
+    let (spelled_index, spelled_value) = find_spelled_digit_right(input);
 
-    let numerical = find_numerical_digit_right(&chars);
-    let spelled = find_spelled_digit_right(&chars);
-
-    if numerical.index <= spelled.index {
-        return numerical.value;
+    match numerical_index <= spelled_index {
+        true => numerical_value,
+        false => spelled_value,
     }
-
-    spelled.value
 }
 
-fn find_numerical_digit_left(chars: &Vec<char>) -> DigitResult {
-    let result = chars
-        .iter()
+fn find_numerical_digit_left(input: &str) -> DigitResult {
+    let result = input
+        .chars()
         .enumerate()
         .find(|(_, character)| character.is_ascii_digit());
 
-    match result {
-        Some((index, character)) => DigitResult::new(character.to_owned(), index),
-        None => DigitResult::new('\0', chars.len()),
-    }
+    let result = result.unwrap_or((input.len(), '\0'));
+    (result.0, result.1)
 }
 
-fn find_numerical_digit_right(chars: &Vec<char>) -> DigitResult {
-    let result = chars
+fn find_numerical_digit_right(input: &str) -> DigitResult {
+    let as_vec: Vec<char> = input.chars().collect();
+
+    let result = as_vec
         .iter()
         .enumerate()
         .rfind(|(_, character)| character.is_ascii_digit());
 
-    let length = chars.len();
-
-    match result {
-        Some((index, character)) => DigitResult::new(character.to_owned(), length - index),
-        None => DigitResult::new('\0', length),
-    }
+    let result = result.unwrap_or((0, &'\0'));
+    (input.len() - result.0, result.1.to_owned())
 }
 
-fn find_spelled_digit_left(chars: &Vec<char>) -> DigitResult {
-    let spelled_digits: HashMap<&str, char> = HashMap::from([
+fn get_spelled_digits() -> HashMap<&'static str, char> {
+    HashMap::from([
         ("one", '1'),
         ("two", '2'),
         ("three", '3'),
@@ -112,11 +92,15 @@ fn find_spelled_digit_left(chars: &Vec<char>) -> DigitResult {
         ("seven", '7'),
         ("eight", '8'),
         ("nine", '9'),
-    ]);
+    ])
+}
 
-    let mut result = DigitResult::new('\0', chars.len());
+fn find_spelled_digit_left(input: &str) -> DigitResult {
+    let spelled_digits = get_spelled_digits();
 
-    let character_string: String = chars.iter().collect();
+    let mut result = (input.len(), '\0');
+
+    let character_string: String = input.to_owned();
 
     for (spelling, character) in spelled_digits.iter() {
         let found = character_string.find(spelling);
@@ -127,30 +111,21 @@ fn find_spelled_digit_left(chars: &Vec<char>) -> DigitResult {
 
         let found_index = found.unwrap();
 
-        if found_index < result.index {
-            result = DigitResult::new(character.to_owned(), found_index);
+        if found_index < result.0 {
+            result = (found_index, character.to_owned());
         }
     }
 
     result
 }
 
-fn find_spelled_digit_right(chars: &Vec<char>) -> DigitResult {
-    let spelled_digits: HashMap<&str, char> = HashMap::from([
-        ("one", '1'),
-        ("two", '2'),
-        ("three", '3'),
-        ("four", '4'),
-        ("five", '5'),
-        ("six", '6'),
-        ("seven", '7'),
-        ("eight", '8'),
-        ("nine", '9'),
-    ]);
+fn find_spelled_digit_right(input: &str) -> DigitResult {
+    let spelled_digits = get_spelled_digits();
 
-    let mut result = DigitResult::new('\0', chars.len());
+    let length = input.len();
+    let mut result = (length, '\0');
 
-    let character_string: String = chars.iter().collect();
+    let character_string: String = input.to_owned();
 
     for (spelling, character) in spelled_digits.iter() {
         let found = character_string.rfind(spelling);
@@ -159,10 +134,10 @@ fn find_spelled_digit_right(chars: &Vec<char>) -> DigitResult {
             continue;
         }
 
-        let found_index = chars.len() - found.unwrap();
+        let found_index = length - found.unwrap();
 
-        if found_index < result.index {
-            result = DigitResult::new(character.to_owned(), found_index);
+        if found_index < result.0 {
+            result = (found_index, character.to_owned());
         }
     }
 
