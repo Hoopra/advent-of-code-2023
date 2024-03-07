@@ -2,7 +2,7 @@
 
 use std::fs::read_to_string;
 
-pub fn solve_day_1_part_1(file_path: &str) {
+pub fn solve_part_1(file_path: &str) {
     let file = read_to_string(file_path).unwrap();
 
     let mut sum = 0;

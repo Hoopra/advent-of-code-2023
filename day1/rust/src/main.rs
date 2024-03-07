@@ -1,12 +1,12 @@
-mod d1p1;
-mod d1p2;
+mod part1;
+mod part2;
 
-use d1p1::solve_day_1_part_1;
-use d1p2::solve_day_1_part_2;
+use part1::solve_part_1;
+use part2::solve_part_2;
 
 fn main() {
     let file_path = "../input.txt";
 
-    solve_day_1_part_1(file_path);
-    solve_day_1_part_2(file_path);
+    solve_part_1(file_path);
+    solve_part_2(file_path);
 }

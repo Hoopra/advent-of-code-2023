@@ -2,7 +2,7 @@ use std::{collections::HashMap, fs::read_to_string};
 
 type DigitResult = (usize, char);
 
-pub fn solve_day_1_part_2(file_path: &str) {
+pub fn solve_part_2(file_path: &str) {
     let file = read_to_string(file_path).unwrap();
 
     let mut sum = 0;

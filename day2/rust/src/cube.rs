@@ -37,6 +37,10 @@ impl CubeDraw {
             blue: max(self.blue, other.blue),
         }
     }
+
+    pub fn cube(&self) -> u16 {
+        self.red * self.green * self.blue
+    }
 }
 
 #[derive(Debug)]
