@@ -1,6 +1,6 @@
-mod parse_text_line;
+mod engine;
 
-use parse_text_line::TextLine;
+use engine::Engine;
 use std::fs::read_to_string;
 
 fn main() {
@@ -9,39 +9,14 @@ fn main() {
 
     let score = get_engine_part_score(schematic);
 
-    println!("grand total: {score}") // 528819
+    println!("grand total: {score}");
+    assert_eq!(score, 528819);
 }
 
 fn get_engine_part_score(schematic: String) -> u32 {
-    let lines: Vec<&str> = schematic.lines().collect();
-    let mut sum = 0;
+    let engine = Engine::new(schematic);
 
-    for (index, line) in lines.iter().enumerate() {
-        let previous = get_previous_line(&lines, index);
-        let next = get_next_line(&lines, index);
-
-        let text_line = TextLine::new(previous, line, next);
-
-        sum += text_line.get_part_score()
-    }
-
-    sum
-}
-
-fn get_previous_line<'a>(lines: &'a Vec<&str>, index: usize) -> &'a str {
-    if index == 0 {
-        return "";
-    }
-
-    lines.get(index - 1).unwrap_or(&"")
-}
-
-fn get_next_line<'a>(lines: &'a Vec<&str>, index: usize) -> &'a str {
-    if index > lines.len() - 1 {
-        return "";
-    }
-
-    lines.get(index + 1).unwrap_or(&"")
+    engine.calculate_part_score()
 }
 
 #[cfg(test)]
