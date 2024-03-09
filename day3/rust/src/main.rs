@@ -7,26 +7,15 @@ fn main() {
     let file_path = "../input.txt";
     let schematic = read_to_string(file_path).unwrap();
 
-    let score = get_engine_part_score(schematic);
-
-    println!("grand total: {score}");
-    assert_eq!(score, 528819);
-}
-
-fn get_engine_part_score(schematic: String) -> u32 {
     let engine = Engine::new(schematic);
 
-    engine.calculate_part_score()
-}
+    let part_score = engine.calculate_part_score();
 
-#[cfg(test)]
-mod test_engine_score {
-    use super::*;
+    println!("grand total: {part_score}");
+    assert_eq!(part_score, 528819);
 
-    #[test]
-    fn calculates_part_score_for_engine() {
-        let schematic = String::from("467..114..\n...*......\n..35..633.\n......#...\n617*......\n.....+.58.\n..592.....\n......755.\n...$.*....\n.664.598..");
+    let gear_ratio = engine.calculate_gear_ratio();
 
-        assert_eq!(get_engine_part_score(schematic), 4361);
-    }
+    println!("grand total: {gear_ratio}");
+    assert_eq!(gear_ratio, 80403602);
 }

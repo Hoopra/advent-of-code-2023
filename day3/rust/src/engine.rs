@@ -32,6 +32,34 @@ impl EngineLine {
             .filter(|number| is_number_adjacent_to_symbol(number, &lines))
             .fold(0, |sum: u32, (value, _, _)| sum + value)
     }
+
+    pub fn get_gear_ratio(&self, previous: Option<&EngineLine>, next: Option<&EngineLine>) -> u32 {
+        let symbols = &self.symbols;
+        let own_line = Some(self);
+
+        let lines = vec![&own_line, &previous, &next];
+
+        symbols
+            .iter()
+            .map(|symbol| find_gear_ratio(symbol, &lines))
+            .sum()
+    }
+
+    fn find_adjacent_numbers(&self, index: usize) -> Vec<u32> {
+        let found = self
+            .numbers
+            .iter()
+            .filter(|(_, start, length)| {
+                let start = *start;
+                let end = start + length - 1;
+
+                end + 1 >= index && start <= index + 1
+            })
+            .map(|(value, _, _)| *value)
+            .collect();
+
+        found
+    }
 }
 
 pub struct Engine {
@@ -68,6 +96,22 @@ impl Engine {
             true => self.lines.get(index - 1),
             false => None,
         }
+    }
+
+    pub fn calculate_gear_ratio(&self) -> u32 {
+        let lines = &self.lines;
+        let mut sum = 0;
+
+        for (index, line) in lines.iter().enumerate() {
+            let previous = self.get_previous_line(index);
+            let next = lines.get(index + 1);
+
+            let ratio = line.get_gear_ratio(previous, next);
+
+            sum += ratio
+        }
+
+        sum
     }
 }
 
@@ -165,6 +209,30 @@ fn is_number_adjacent_to_symbol(number: &EngineNumber, lines: &Vec<&Option<&Engi
     found
 }
 
+fn find_gear_ratio((_, index): &EngineSymbol, lines: &Vec<&Option<&EngineLine>>) -> u32 {
+    let numbers = find_adjacent_numbers(*index, lines);
+
+    match numbers.len() == 2 {
+        false => 0,
+        true => numbers.iter().fold(1, |previous, next| previous * next),
+    }
+}
+
+fn find_adjacent_numbers(index: usize, lines: &Vec<&Option<&EngineLine>>) -> Vec<u32> {
+    lines
+        .iter()
+        .flat_map(|line| find_numbers_in_line(index, **line))
+        .collect()
+}
+
+fn find_numbers_in_line(index: usize, line: Option<&EngineLine>) -> Vec<u32> {
+    if line.is_none() {
+        return vec![];
+    }
+
+    line.unwrap().find_adjacent_numbers(index)
+}
+
 fn has_symbol_at_positions(line: Option<&EngineLine>, start: usize, end: usize) -> bool {
     if line.is_none() {
         return false;
@@ -227,5 +295,22 @@ mod test_parser {
         let engine = Engine::new(String::from(text));
 
         assert_eq!(engine.calculate_part_score(), 755);
+    }
+
+    #[test]
+    fn calculates_part_score_for_engine() {
+        let schematic = String::from("467..114..\n...*......\n..35..633.\n......#...\n617*......\n.....+.58.\n..592.....\n......755.\n...$.*....\n.664.598..");
+        let engine = Engine::new(schematic);
+
+        assert_eq!(engine.calculate_part_score(), 4361);
+    }
+
+    #[test]
+    fn finds_gear_ratio() {
+        let schematic = String::from("467..114..\n..._......\n..35..633.\n......#...\n617_......\n.....+.58.\n..592.....\n......755.\n...$._....\n.664.598..");
+
+        let engine = Engine::new(schematic);
+
+        assert_eq!(engine.calculate_gear_ratio(), 467835);
     }
 }
