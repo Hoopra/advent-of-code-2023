@@ -1,10 +1,10 @@
 use std::cmp::min;
 
 // character, position
-type EngineSymbol = (char, usize);
+pub type EngineSymbol = (char, usize);
 
 // value, start, length
-type EngineNumber = (u32, usize, usize);
+pub type EngineNumber = (u32, usize, usize);
 
 pub struct EngineLine {
     numbers: Vec<EngineNumber>,
@@ -21,44 +21,12 @@ impl EngineLine {
 }
 
 impl EngineLine {
-    pub fn get_part_score(&self, previous: Option<&EngineLine>, next: Option<&EngineLine>) -> u32 {
-        let numbers = &self.numbers;
-        let own_line = Some(self);
-
-        let lines = vec![&own_line, &previous, &next];
-
-        numbers
-            .iter()
-            .filter(|number| is_number_adjacent_to_symbol(number, &lines))
-            .fold(0, |sum: u32, (value, _, _)| sum + value)
+    pub fn numbers(&self) -> &Vec<EngineNumber> {
+        &self.numbers
     }
 
-    pub fn get_gear_ratio(&self, previous: Option<&EngineLine>, next: Option<&EngineLine>) -> u32 {
-        let symbols = &self.symbols;
-        let own_line = Some(self);
-
-        let lines = vec![&own_line, &previous, &next];
-
-        symbols
-            .iter()
-            .map(|symbol| find_gear_ratio(symbol, &lines))
-            .sum()
-    }
-
-    fn find_adjacent_numbers(&self, index: usize) -> Vec<u32> {
-        let found = self
-            .numbers
-            .iter()
-            .filter(|(_, start, length)| {
-                let start = *start;
-                let end = start + length - 1;
-
-                end + 1 >= index && start <= index + 1
-            })
-            .map(|(value, _, _)| *value)
-            .collect();
-
-        found
+    pub fn symbols(&self) -> &Vec<EngineSymbol> {
+        &self.symbols
     }
 }
 
@@ -75,43 +43,11 @@ impl Engine {
 }
 
 impl Engine {
-    pub fn calculate_part_score(&self) -> u32 {
-        let lines = &self.lines;
-        let mut sum = 0;
-
-        for (index, line) in lines.iter().enumerate() {
-            let previous = self.get_previous_line(index);
-            let next = lines.get(index + 1);
-
-            let score = line.get_part_score(previous, next);
-
-            sum += score
-        }
-
-        sum
-    }
-
-    fn get_previous_line<'a>(&self, index: usize) -> Option<&EngineLine> {
+    pub fn get_previous_line<'a>(&self, index: usize) -> Option<&EngineLine> {
         match index > 0 {
             true => self.lines.get(index - 1),
             false => None,
         }
-    }
-
-    pub fn calculate_gear_ratio(&self) -> u32 {
-        let lines = &self.lines;
-        let mut sum = 0;
-
-        for (index, line) in lines.iter().enumerate() {
-            let previous = self.get_previous_line(index);
-            let next = lines.get(index + 1);
-
-            let ratio = line.get_gear_ratio(previous, next);
-
-            sum += ratio
-        }
-
-        sum
     }
 }
 
@@ -188,60 +124,8 @@ fn find_symbols_in_text(text: &str) -> Vec<EngineSymbol> {
     result
 }
 
-fn is_symbol(character: char) -> bool {
+pub fn is_symbol(character: char) -> bool {
     !character.is_ascii_digit() && character != '.'
-}
-
-fn is_number_adjacent_to_symbol(number: &EngineNumber, lines: &Vec<&Option<&EngineLine>>) -> bool {
-    let (_, start, length) = number;
-
-    let start = match *start >= 1 {
-        true => start - 1,
-        false => 0,
-    };
-
-    let end = start + length + 1;
-
-    let found = lines
-        .iter()
-        .any(|line| has_symbol_at_positions(line.as_deref(), start, end));
-
-    found
-}
-
-fn find_gear_ratio((_, index): &EngineSymbol, lines: &Vec<&Option<&EngineLine>>) -> u32 {
-    let numbers = find_adjacent_numbers(*index, lines);
-
-    match numbers.len() == 2 {
-        false => 0,
-        true => numbers.iter().fold(1, |previous, next| previous * next),
-    }
-}
-
-fn find_adjacent_numbers(index: usize, lines: &Vec<&Option<&EngineLine>>) -> Vec<u32> {
-    lines
-        .iter()
-        .flat_map(|line| find_numbers_in_line(index, **line))
-        .collect()
-}
-
-fn find_numbers_in_line(index: usize, line: Option<&EngineLine>) -> Vec<u32> {
-    if line.is_none() {
-        return vec![];
-    }
-
-    line.unwrap().find_adjacent_numbers(index)
-}
-
-fn has_symbol_at_positions(line: Option<&EngineLine>, start: usize, end: usize) -> bool {
-    if line.is_none() {
-        return false;
-    }
-
-    line.unwrap()
-        .symbols
-        .iter()
-        .any(|(_, position)| position >= &start && position <= &end)
 }
 
 #[cfg(test)]
@@ -278,15 +162,6 @@ mod test_parser {
         let result = find_symbols_in_text(input_text);
 
         assert_eq!(result, vec![('*', 1), ('*', 15), ('*', 26), ('%', 33),]);
-    }
-
-    #[test]
-    fn determines_if_text_has_symbols_in_positions() {
-        let line = EngineLine::new(".......+...38");
-
-        assert_eq!(has_symbol_at_positions(Some(&line), 0, 4), false);
-        assert_eq!(has_symbol_at_positions(Some(&line), 5, 8), true);
-        assert_eq!(has_symbol_at_positions(Some(&line), 10, 15), false);
     }
 
     #[test]
