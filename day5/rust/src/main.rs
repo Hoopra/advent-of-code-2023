@@ -8,8 +8,6 @@ fn main() {
     let text = read_to_string(file_path).unwrap();
 
     parse_almanac(text);
-
-    //
 }
 
 fn parse_almanac(input: String) {
