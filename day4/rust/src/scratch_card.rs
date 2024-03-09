@@ -1,17 +1,21 @@
 pub struct ScratchCard {
+    pub id: u32,
     numbers: Vec<u32>,
     winning_numbers: Vec<u32>,
 }
 
 impl ScratchCard {
     pub fn new(text: &str) -> ScratchCard {
-        let (_, numbers_part) = text.split_at(8);
+        let (id_part, numbers_part) = text.split_at(8);
+
+        let id: u32 = id_part.split(' ').last().unwrap().parse().unwrap_or(0);
 
         let parts: Vec<&str> = numbers_part.split('|').collect();
         let part1 = parts.get(0);
         let part2 = parts.get(1);
 
         ScratchCard {
+            id,
             winning_numbers: find_numbers_in_text(part1.unwrap_or(&"")),
             numbers: find_numbers_in_text(part2.unwrap_or(&"")),
         }
