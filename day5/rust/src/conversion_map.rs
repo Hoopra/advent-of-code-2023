@@ -1,23 +1,27 @@
 use std::cmp::min;
 
 // start, end
-type Range = (i64, i64);
+pub type Range = (i64, i64);
 
 #[derive(Debug)]
 struct ConversionRange {
-    destination_start: i64,
     source_start: i64,
-    length: i64,
+    source_end: i64,
+    add: i64,
 }
 
 impl ConversionRange {
     pub fn new(input: &str) -> ConversionRange {
         let numbers: Vec<&str> = input.split(' ').collect();
 
+        let source_start: i64 = numbers.get(1).unwrap_or(&"0").parse().unwrap();
+        let destination_start: i64 = numbers.get(0).unwrap_or(&"0").parse().unwrap();
+        let length: i64 = numbers.get(2).unwrap_or(&"0").parse().unwrap();
+
         ConversionRange {
-            destination_start: numbers.get(0).unwrap_or(&"0").parse().unwrap(),
-            source_start: numbers.get(1).unwrap_or(&"0").parse().unwrap(),
-            length: numbers.get(2).unwrap_or(&"0").parse().unwrap(),
+            add: destination_start - source_start,
+            source_start,
+            source_end: source_start + length - 1,
         }
     }
 }
@@ -28,6 +32,16 @@ pub struct ConversionMap {
 }
 
 impl ConversionMap {
+    pub fn from_formatted_text(text: Option<&str>) -> ConversionMap {
+        let map_text: String = text
+            .unwrap_or(&"")
+            .lines()
+            .skip(1)
+            .fold(String::new(), |previous, next| previous + next + "\n");
+
+        ConversionMap::from_text(map_text)
+    }
+
     pub fn from_text(text: String) -> ConversionMap {
         let ranges = text
             .lines()
@@ -41,15 +55,24 @@ impl ConversionMap {
 
 impl ConversionMap {
     pub fn convert(&self, input: i64) -> i64 {
-        let range = self.ranges.iter().find(|range| {
-            range.source_start <= input && range.source_start + range.length >= input
-        });
+        let range = self
+            .ranges
+            .iter()
+            .find(|range| range.source_start <= input && range.source_end >= input);
 
         if range.is_none() {
             return input;
         }
 
         convert_by_range(input, range.unwrap())
+    }
+
+    pub fn convert_ranges(&self, ranges: Vec<Range>) -> Vec<Range> {
+        ranges
+            .iter()
+            .map(|range| self.convert_range(*range))
+            .flatten()
+            .collect()
     }
 
     pub fn convert_range(&self, input: Range) -> Vec<Range> {
@@ -63,15 +86,12 @@ impl ConversionMap {
 
         let mut current = initial_range_start;
 
-        while current < initial_range_end {
+        while current <= initial_range_end {
             let matched_range = find_range_containing_value(ranges, current);
 
             if matched_range.is_some() {
                 let matched_range = matched_range.unwrap();
-                let end = min(
-                    matched_range.source_start + matched_range.length - 1,
-                    initial_range_end,
-                );
+                let end = min(matched_range.source_end, initial_range_end);
 
                 result.push((
                     convert_by_range(current, matched_range),
@@ -84,18 +104,18 @@ impl ConversionMap {
 
             let next_range = find_next_range(ranges, current);
 
-            if next_range.is_none() {
-                result.push((initial_range_start, initial_range_end));
-                current = initial_range_end;
+            if next_range.is_some() {
+                let next_range = next_range.unwrap();
+                let end = next_range.source_start - 1;
+
+                result.push((initial_range_start, end));
+                current = end + 1;
+
                 continue;
             }
 
-            let next_range = next_range.unwrap();
-
-            let end = next_range.source_start - 1;
-
-            result.push((initial_range_start, end));
-            current = end;
+            result.push((current, initial_range_end));
+            break;
         }
 
         result
@@ -129,19 +149,13 @@ fn find_range_containing_value(
     value: i64,
 ) -> Option<&ConversionRange> {
     ranges.iter().find(|range| {
-        let range_end = range.source_start + range.length;
+        let range_end = range.source_end;
         range.source_start <= value && range_end >= value
     })
 }
 
 fn convert_by_range(value: i64, range: &ConversionRange) -> i64 {
-    let ConversionRange {
-        destination_start,
-        source_start,
-        ..
-    } = range;
-
-    value + (destination_start - source_start)
+    value + range.add
 }
 
 #[cfg(test)]
@@ -152,15 +166,11 @@ mod test_conversion_range {
     fn constructs_conversion_range_from_text() {
         let input = "50 98 2";
 
-        let ConversionRange {
-            destination_start,
-            source_start,
-            length,
-        } = ConversionRange::new(input);
+        let range = ConversionRange::new(input);
 
-        assert_eq!(destination_start, 50);
-        assert_eq!(source_start, 98);
-        assert_eq!(length, 2);
+        assert_eq!(range.add, -48);
+        assert_eq!(range.source_start, 98);
+        assert_eq!(range.source_end, 99);
     }
 }
 
@@ -184,8 +194,20 @@ mod test_conversion_map {
 
         let map = ConversionMap::from_text(input);
 
-        let range = (90, 100);
-        assert_eq!(map.convert_range(range), vec![(92, 99), (50, 51)]);
+        // input:
+        // [90, 91, 92, 93, 94, 95, 96, 97] (90, 97)
+        // [98, 99]
+        // [100]
+        // output:
+        // [92, 93, 94, 95, 96, 97, 98, 99] (92, 99)
+        // [50, 51] (50, 51)
+        // [100] (100, 100)
+
+        assert_eq!(
+            map.convert_range((90, 100)),
+            vec![(92, 99), (50, 51), (100, 100)]
+        );
+        assert_eq!(map.convert_range((40, 50)), vec![(40, 49), (52, 52)]);
     }
 
     #[test]
@@ -195,11 +217,11 @@ mod test_conversion_map {
 
         let matched = find_range_containing_value(&ranges, 50);
         assert_eq!(matched.unwrap().source_start, 50);
-        assert_eq!(matched.unwrap().destination_start, 52);
+        assert_eq!(matched.unwrap().add, 2);
 
         let matched = find_range_containing_value(&ranges, 99);
         assert_eq!(matched.unwrap().source_start, 98);
-        assert_eq!(matched.unwrap().destination_start, 50);
+        assert_eq!(matched.unwrap().add, -48);
 
         let matched = find_range_containing_value(&ranges, 0);
         assert_eq!(matched.is_none(), true);
@@ -213,6 +235,6 @@ mod test_conversion_map {
         let next = find_next_range(&ranges, 0);
 
         assert_eq!(next.unwrap().source_start, 50);
-        assert_eq!(next.unwrap().destination_start, 52);
+        assert_eq!(next.unwrap().add, 2);
     }
 }
