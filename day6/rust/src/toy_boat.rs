@@ -1,9 +1,9 @@
 pub struct ToyBoat {
-    acceleration: u32,
+    acceleration: u64,
 }
 
 impl ToyBoat {
-    pub fn new(acceleration: Option<u32>) -> ToyBoat {
+    pub fn new(acceleration: Option<u64>) -> ToyBoat {
         ToyBoat {
             acceleration: acceleration.unwrap_or(1),
         }
@@ -11,19 +11,17 @@ impl ToyBoat {
 }
 
 impl ToyBoat {
-    fn calculate_distance_traveled(&self, charge_time: u32, race_time: u32) -> u32 {
+    fn calculate_distance_traveled(&self, charge_time: u64, race_time: u64) -> u64 {
         let velocity = charge_time * self.acceleration;
         velocity * (race_time - charge_time)
     }
 
-    pub fn calculate_distances_traveled(&self, race_time: u32) -> Vec<u32> {
-        // let velocity = charge_time * self.acceleration;
-        // velocity * (race_time - charge_time)
+    pub fn calculate_distances_traveled(&self, race_time: u64) -> Vec<u64> {
         (0..race_time + 1)
-            .collect::<Vec<u32>>()
+            .collect::<Vec<u64>>()
             .iter()
             .enumerate()
-            .map(|(charge_time, _)| self.calculate_distance_traveled(charge_time as u32, race_time))
+            .map(|(charge_time, _)| self.calculate_distance_traveled(charge_time as u64, race_time))
             .collect()
     }
 }
