@@ -6,22 +6,41 @@ fn main() {
     let file_path = "../input.txt";
     let text = read_to_string(file_path).unwrap();
 
+    extrapolate_last(&text);
+    extrapolate_first(&text)
+}
+
+fn extrapolate_last(text: &str) {
     let sum_total: i32 = text
         .lines()
         .map(|text_line| {
-            //
             let number_line = text_line
                 .split_whitespace()
                 .map(|number| number.parse::<i32>().unwrap())
                 .collect();
-            find_next_in_number_line(&number_line)
+            find_next_last_in_number_line(&number_line)
         })
         .sum();
 
     assert_eq!(sum_total, 1898776583);
 }
 
-fn find_next_in_number_line(line: &NumberLine) -> i32 {
+fn extrapolate_first(text: &str) {
+    let sum_total: i32 = text
+        .lines()
+        .map(|text_line| {
+            let number_line = text_line
+                .split_whitespace()
+                .map(|number| number.parse::<i32>().unwrap())
+                .collect();
+            find_next_first_in_number_line(&number_line)
+        })
+        .sum();
+
+    assert_eq!(sum_total, 1100);
+}
+
+fn find_next_last_in_number_line(line: &NumberLine) -> i32 {
     let lines = unwrap_line(line);
 
     lines
@@ -29,6 +48,22 @@ fn find_next_in_number_line(line: &NumberLine) -> i32 {
         .rev()
         .map(|line| line.iter().last().unwrap())
         .sum()
+}
+
+fn find_next_first_in_number_line(line: &NumberLine) -> i32 {
+    let lines = unwrap_line(line);
+
+    lines
+        .iter()
+        .rev()
+        .enumerate()
+        .map(|(index, line)| (index, line.first().unwrap()))
+        .fold(0, |accumulator, (index, next)| {
+            if index == 0 {
+                return *next;
+            }
+            next - accumulator
+        })
 }
 
 fn unwrap_line(line: &NumberLine) -> Vec<NumberLine> {
@@ -89,14 +124,26 @@ mod tests {
     }
 
     #[test]
-    fn calculates_next_number_in_line() {
+    fn calculates_next_last_number_in_line() {
         let input = vec![0, 3, 6, 9, 12, 15];
-        assert_eq!(find_next_in_number_line(&input), 18);
+        assert_eq!(find_next_last_in_number_line(&input), 18);
 
         let input = vec![1, 3, 6, 10, 15, 21];
-        assert_eq!(find_next_in_number_line(&input), 28);
+        assert_eq!(find_next_last_in_number_line(&input), 28);
 
         let input = vec![10, 13, 16, 21, 30, 45];
-        assert_eq!(find_next_in_number_line(&input), 68);
+        assert_eq!(find_next_last_in_number_line(&input), 68);
+    }
+
+    #[test]
+    fn calculates_next_first_number_in_line() {
+        let input = vec![0, 3, 6, 9, 12, 15];
+        assert_eq!(find_next_first_in_number_line(&input), -3);
+
+        let input = vec![1, 3, 6, 10, 15, 21];
+        assert_eq!(find_next_first_in_number_line(&input), 0);
+
+        let input = vec![10, 13, 16, 21, 30, 45];
+        assert_eq!(find_next_first_in_number_line(&input), 5);
     }
 }
