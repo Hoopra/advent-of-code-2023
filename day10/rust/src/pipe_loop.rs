@@ -1,4 +1,4 @@
-use crate::pipe::{Pipe, PipeGrid, PipePart, Position};
+use crate::model::{Pipe, PipeGrid, Position};
 use crate::pipe_map::{construct_pipe_map, find_tile_in_map};
 
 pub fn find_farthest_connected_pipe(input: &str) -> u32 {
@@ -8,7 +8,7 @@ pub fn find_farthest_connected_pipe(input: &str) -> u32 {
     ((pipe_loop.len() as f32) / 2.0).round() as u32
 }
 
-fn construct_pipe_loop(map: &PipeGrid, start: Position) -> Vec<Position> {
+pub fn construct_pipe_loop(map: &PipeGrid, start: Position) -> Vec<Position> {
     let mut result = vec![];
 
     let mut previous: Option<Position> = None;
@@ -23,9 +23,9 @@ fn construct_pipe_loop(map: &PipeGrid, start: Position) -> Vec<Position> {
             break;
         }
 
-        let pipe = pipe.unwrap();
+        let pipe = pipe.as_ref().unwrap();
 
-        let next = find_connecting_pipe(pipe, current, previous);
+        let next = find_connecting_pipe(pipe, previous);
 
         previous = Some(current);
         current = next;
@@ -38,32 +38,8 @@ fn construct_pipe_loop(map: &PipeGrid, start: Position) -> Vec<Position> {
     result
 }
 
-fn find_connecting_pipe(pipe: Pipe, position: Position, previous: Option<Position>) -> Position {
-    let Pipe {
-        left,
-        right,
-        up,
-        down,
-    } = pipe;
-
-    let (row, col) = position;
-
-    let mut connectors: Vec<Position> = vec![];
-    if left == PipePart::Connection {
-        connectors.push((row, col - 1));
-    }
-
-    if right == PipePart::Connection {
-        connectors.push((row, col + 1));
-    }
-
-    if up == PipePart::Connection {
-        connectors.push((row - 1, col));
-    }
-
-    if down == PipePart::Connection {
-        connectors.push((row + 1, col));
-    }
+fn find_connecting_pipe(pipe: &Pipe, previous: Option<Position>) -> Position {
+    let connectors = pipe.get_connectors();
 
     if previous.is_none() {
         return *connectors.get(0).unwrap();

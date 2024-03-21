@@ -1,4 +1,4 @@
-mod pipe;
+mod model;
 mod pipe_loop;
 mod pipe_map;
 
