@@ -43,7 +43,7 @@ impl Engine {
 }
 
 impl Engine {
-    pub fn get_previous_line<'a>(&self, index: usize) -> Option<&EngineLine> {
+    pub fn get_previous_line(&self, index: usize) -> Option<&EngineLine> {
         match index > 0 {
             true => self.lines.get(index - 1),
             false => None,

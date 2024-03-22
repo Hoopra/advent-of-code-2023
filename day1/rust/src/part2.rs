@@ -5,18 +5,13 @@ type DigitResult = (usize, char);
 pub fn solve_part_2(file_path: &str) {
     let file = read_to_string(file_path).unwrap();
 
-    let mut sum = 0;
-    let mut lines = 0;
+    let sum = file.lines().fold(0, |previous, next| {
+        let number = find_calibration_number(next);
 
-    for line in file.split_whitespace() {
-        let number = find_calibration_number(line);
+        previous + number
+    });
 
-        sum += number;
-        lines += 1;
-    }
-
-    assert_eq!(lines, 1000);
-    println!("advent 2 grand total: {sum}"); // 54277
+    assert_eq!(sum, 54277);
 }
 
 fn find_calibration_number(input: &str) -> u32 {

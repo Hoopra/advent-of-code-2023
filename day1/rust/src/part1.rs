@@ -6,9 +6,8 @@ pub fn solve_part_1(file_path: &str) {
     let file = read_to_string(file_path).unwrap();
 
     let mut sum = 0;
-    let mut lines = 0;
 
-    for line in file.split_whitespace() {
+    for line in file.lines() {
         let first_digit = find_digit_from_start(line);
         let last_digit = find_digit_from_end(line);
 
@@ -16,18 +15,13 @@ pub fn solve_part_1(file_path: &str) {
         let number = number.parse::<u32>().expect("invalid number");
 
         sum += number;
-        lines += 1;
     }
 
-    assert_eq!(lines, 1000);
-    println!("advent 1 grand total: {sum}");
+    assert_eq!(sum, 54390);
 }
 
 fn concat_chars_to_number(first: char, last: char) -> String {
-    let mut number = String::from(first);
-    number.push(last);
-
-    number
+    format!("{}{}", first, last)
 }
 
 fn find_digit_from_start(input: &str) -> char {
