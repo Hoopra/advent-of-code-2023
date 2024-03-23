@@ -1,4 +1,4 @@
-pub type Position = (usize, usize);
+use super::position::{distance_between_positions, Position};
 
 type MapSize = Position;
 
@@ -33,8 +33,14 @@ impl StarMap {
 impl StarMap {
     pub fn expand(&mut self) {
         let (x_empty, y_empty) = self.find_empty_rows_cols();
-        self.expand_rows(x_empty);
-        self.expand_cols(y_empty);
+        self.expand_rows(x_empty, None);
+        self.expand_cols(y_empty, None);
+    }
+
+    pub fn expand_by_factor(&mut self, factor: usize) {
+        let (x_empty, y_empty) = self.find_empty_rows_cols();
+        self.expand_rows(x_empty, Some(factor));
+        self.expand_cols(y_empty, Some(factor));
     }
 
     fn find_empty_rows_cols(&self) -> (Vec<usize>, Vec<usize>) {
@@ -61,7 +67,9 @@ impl StarMap {
         (x_empty, y_empty)
     }
 
-    pub fn expand_rows(&mut self, indexes: Vec<usize>) {
+    pub fn expand_rows(&mut self, indexes: Vec<usize>, factor: Option<usize>) {
+        let factor = factor.unwrap_or(2) - 1;
+
         self.galaxies = self
             .galaxies
             .iter()
@@ -74,16 +82,16 @@ impl StarMap {
                     .collect::<Vec<&usize>>()
                     .len();
 
-                println!("galaxy {:?}, expand y {} times", position, previous_rows);
-
-                (*x, *y + previous_rows)
+                (*x, *y + (previous_rows * factor))
             })
             .collect();
 
         self.size.0 += 1;
     }
 
-    pub fn expand_cols(&mut self, indexes: Vec<usize>) {
+    pub fn expand_cols(&mut self, indexes: Vec<usize>, factor: Option<usize>) {
+        let factor = factor.unwrap_or(2) - 1;
+
         self.galaxies = self
             .galaxies
             .iter()
@@ -96,9 +104,7 @@ impl StarMap {
                     .collect::<Vec<&usize>>()
                     .len();
 
-                println!("galaxy {:?}, expand x {} times", position, previous_cols);
-
-                (*x + previous_cols, *y)
+                (*x + (previous_cols * factor), *y)
             })
             .collect();
 
@@ -121,6 +127,17 @@ impl StarMap {
 
         result
     }
+
+    pub fn sum_galaxy_pair_distances(&self) -> usize {
+        let result = self
+            .find_galaxy_pairs()
+            .iter()
+            .fold(0, |sum, (pair_a, pair_b)| {
+                sum + distance_between_positions(pair_a, pair_b)
+            });
+
+        result
+    }
 }
 
 #[cfg(test)]
@@ -135,8 +152,8 @@ mod tests {
 
         assert_eq!(map.galaxies, vec![(0, 0), (6, 2)]);
 
-        map.expand_cols(vec![1]);
-        map.expand_rows(vec![1]);
+        map.expand_cols(vec![1], None);
+        map.expand_rows(vec![1], None);
 
         assert_eq!(map.galaxies, vec![(0, 0), (7, 3)]);
     }
@@ -172,5 +189,35 @@ mod tests {
         map.expand();
 
         assert_eq!(map.galaxies, vec![(11, 0), (2, 1), (15, 2), (12, 5)]);
+    }
+
+    #[test]
+    fn calculates_galaxy_pair_distances() {
+        let input = "...#......\n.......#..\n#.........\n..........\n......#...\n.#........\n.........#\n..........\n.......#..\n#...#.....";
+        let mut map = StarMap::new(input);
+
+        map.expand();
+
+        assert_eq!(map.sum_galaxy_pair_distances(), 374);
+    }
+
+    #[test]
+    fn expands_map_by_factor_10() {
+        let input = "...#......\n.......#..\n#.........\n..........\n......#...\n.#........\n.........#\n..........\n.......#..\n#...#.....";
+        let mut map = StarMap::new(input);
+
+        map.expand_by_factor(10);
+
+        assert_eq!(map.sum_galaxy_pair_distances(), 1030);
+    }
+
+    #[test]
+    fn expands_map_by_factor_100() {
+        let input = "...#......\n.......#..\n#.........\n..........\n......#...\n.#........\n.........#\n..........\n.......#..\n#...#.....";
+        let mut map = StarMap::new(input);
+
+        map.expand_by_factor(100);
+
+        assert_eq!(map.sum_galaxy_pair_distances(), 8410);
     }
 }
