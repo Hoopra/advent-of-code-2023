@@ -1,15 +1,13 @@
 use super::Position;
 
-pub type PipeGrid = Vec<Vec<Option<Pipe>>>;
-
 pub struct SurroundingTiles<'a> {
-    pub left: &'a Option<Pipe>,
-    pub right: &'a Option<Pipe>,
-    pub up: &'a Option<Pipe>,
-    pub down: &'a Option<Pipe>,
+    pub left: Option<&'a Pipe>,
+    pub right: Option<&'a Pipe>,
+    pub up: Option<&'a Pipe>,
+    pub down: Option<&'a Pipe>,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Pipe {
     pub position: Position,
     pub symbol: char,
