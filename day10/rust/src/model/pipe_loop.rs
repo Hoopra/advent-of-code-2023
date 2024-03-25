@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use super::{Direction, Pipe, PipeMap, Position};
+use super::{Pipe, PipeMap, Position};
 
 pub struct PipeLoop {
     pipes: HashMap<Position, Pipe>,
@@ -52,7 +52,7 @@ impl PipeLoop {
         self.pipes.get(position)
     }
 
-    pub fn find_pipes_in_direction(&self, position: &Position, direction: &Direction) -> Vec<char> {
+    pub fn find_pipes_right(&self, position: &Position) -> Vec<char> {
         let (x_start, y) = position;
 
         self.pipes
@@ -60,11 +60,8 @@ impl PipeLoop {
             .filter_map(|(position, pipe)| {
                 let (pipe_x, pipe_y) = position;
 
-                match direction {
-                    Direction::Right if pipe_x > x_start && pipe_y == y => Some(pipe.symbol),
-                    Direction::Left if pipe_x < x_start && pipe_y == y => Some(pipe.symbol),
-                    Direction::Up if pipe_y < y && pipe_x == x_start => Some(pipe.symbol),
-                    Direction::Down if pipe_y > y && pipe_x == x_start => Some(pipe.symbol),
+                match pipe_x > x_start && pipe_y == y {
+                    true => Some(pipe.symbol),
                     _ => None,
                 }
             })

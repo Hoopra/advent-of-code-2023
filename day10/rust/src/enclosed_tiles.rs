@@ -1,4 +1,4 @@
-use crate::model::{Direction, PipeLoop, PipeMap, Position};
+use crate::model::{PipeLoop, PipeMap, Position};
 
 pub fn find_enclosed_tiles_in_map(input: &str) -> Vec<Position> {
     let map = PipeMap::from_text(input);
@@ -37,25 +37,13 @@ fn find_enclosed_tiles(empty_tiles: &Vec<Position>, pipe_loop: &PipeLoop) -> Vec
 }
 
 fn is_tile_enclosed(tile: &Position, pipe_loop: &PipeLoop) -> bool {
-    let enclosement_scores = vec![
-        is_tile_enclosed_direction(tile, pipe_loop, Direction::Left),
-        is_tile_enclosed_direction(tile, pipe_loop, Direction::Right),
-        is_tile_enclosed_direction(tile, pipe_loop, Direction::Up),
-        is_tile_enclosed_direction(tile, pipe_loop, Direction::Down),
-    ];
-
-    enclosement_scores.iter().any(|enclosed| enclosed == &true)
+    is_tile_enclosed_right(tile, pipe_loop)
 }
 
-fn is_tile_enclosed_direction(tile: &Position, pipe_loop: &PipeLoop, direction: Direction) -> bool {
-    let pipes: Vec<char> = pipe_loop.find_pipes_in_direction(tile, &direction);
+fn is_tile_enclosed_right(tile: &Position, pipe_loop: &PipeLoop) -> bool {
+    let pipes: Vec<char> = pipe_loop.find_pipes_right(tile);
 
-    let excluded_symbol = match direction {
-        Direction::Left | Direction::Right => '-',
-        _ => '|',
-    };
-
-    is_tile_enclosed_by_pipes(pipes, excluded_symbol)
+    is_tile_enclosed_by_pipes(pipes, '-')
 }
 
 fn is_tile_enclosed_by_pipes(pipes: Vec<char>, excluded_symbol: char) -> bool {

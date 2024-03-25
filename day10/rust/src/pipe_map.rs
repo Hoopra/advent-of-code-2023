@@ -1,6 +1,5 @@
 use crate::model::{Pipe, PipeGrid, Position, SurroundingTiles};
 
-// returns (map, starting_position)
 pub fn construct_pipe_map(input: &str) -> (PipeGrid, Position) {
     let mut start_x = 0;
     let mut start_y = 0;

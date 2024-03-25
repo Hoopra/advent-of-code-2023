@@ -29,8 +29,8 @@ mod tests {
 
     #[test]
     fn finds_steps_to_furthest_pipe_in_loop() {
-        // let input = ".....\n.S-7.\n.|.|.\n.L-J.\n.....";
-        // assert_eq!(find_farthest_connected_pipe(input), 4);
+        let input = ".....\n.S-7.\n.|.|.\n.L-J.\n.....";
+        assert_eq!(find_farthest_connected_pipe(input), 4);
 
         let input = "..F7.\n.FJ|.\nSJ.L7\n|F--J\nLJ...";
         assert_eq!(find_farthest_connected_pipe(input), 8);
