@@ -1,13 +1,4 @@
-use crate::permutation::create_permutations;
-
-#[derive(Debug, PartialEq, Clone, Copy)]
-enum SpringState {
-    Operational,
-    Damaged,
-    Unknown,
-}
-
-type SpringStates = Vec<SpringState>;
+use super::{find_possible_state_arrangements, spring_states_to_groups, SpringState, SpringStates};
 
 #[derive(Debug)]
 pub struct SpringSchematic {
@@ -43,7 +34,7 @@ impl SpringSchematic {
 impl SpringSchematic {
     pub fn find_damaged_combinations(&self) -> usize {
         let states = &self.states;
-        let permutations = find_group_permutations(states);
+        let permutations = find_possible_state_arrangements(states);
 
         if permutations.len() == 0 {
             return 1;
@@ -51,46 +42,12 @@ impl SpringSchematic {
 
         permutations
             .iter()
-            .filter(|state| is_permutation_possible(state, &self.damaged_groups))
+            .filter(|state| is_arrangement_valid(state, &self.damaged_groups))
             .count()
     }
 }
 
-fn find_group_permutations(states: &SpringStates) -> Vec<SpringStates> {
-    let unknowns = states
-        .iter()
-        .filter(|state| state == &&SpringState::Unknown)
-        .count();
-
-    let unknown_state_permutations = create_permutations(unknowns);
-
-    unknown_state_permutations
-        .iter()
-        .map(|unknown_state| create_permutation(states, unknown_state))
-        .collect()
-}
-
-fn create_permutation(states: &SpringStates, unknown_states: &Vec<bool>) -> SpringStates {
-    let mut replace_index = 0;
-
-    states
-        .iter()
-        .map(|state| match state {
-            SpringState::Unknown => {
-                let unknown_state = unknown_states.get(replace_index).unwrap();
-                replace_index += 1;
-
-                match unknown_state {
-                    true => SpringState::Operational,
-                    false => SpringState::Damaged,
-                }
-            }
-            _ => *state,
-        })
-        .collect()
-}
-
-fn is_permutation_possible(states: &SpringStates, damaged_groups: &Vec<usize>) -> bool {
+fn is_arrangement_valid(states: &SpringStates, damaged_groups: &Vec<usize>) -> bool {
     let state_groups = spring_states_to_groups(states);
 
     if state_groups.len() != damaged_groups.len() {
@@ -98,30 +55,6 @@ fn is_permutation_possible(states: &SpringStates, damaged_groups: &Vec<usize>) -
     }
 
     state_groups.iter().zip(damaged_groups).all(|(a, b)| a == b)
-}
-
-fn spring_states_to_groups(states: &SpringStates) -> Vec<usize> {
-    let mut groups: Vec<usize> = vec![];
-    let mut group_size = 0;
-
-    for value in states {
-        match value {
-            SpringState::Operational => {
-                if group_size > 0 {
-                    groups.push(group_size);
-                }
-
-                group_size = 0;
-            }
-            _ => group_size += 1,
-        }
-    }
-
-    if group_size > 0 {
-        groups.push(group_size)
-    }
-
-    groups
 }
 
 #[cfg(test)]
@@ -183,26 +116,5 @@ mod tests {
 
         let result = spring_states_to_groups(&schematic.states);
         assert_eq!(result, vec![1, 1])
-    }
-
-    #[test]
-    fn finds_group_permutations() {
-        let input = "..?..? 1,1";
-        let schematic = SpringSchematic::from_text(input);
-
-        let result = find_group_permutations(&schematic.states);
-        assert_eq!(result.len(), 4);
-
-        let input = ".??.?? 1,1";
-        let schematic = SpringSchematic::from_text(input);
-
-        let result = find_group_permutations(&schematic.states);
-        assert_eq!(result.len(), 16);
-
-        let input = "?????? 1,1";
-        let schematic = SpringSchematic::from_text(input);
-
-        let result = find_group_permutations(&schematic.states);
-        assert_eq!(result.len(), 64);
     }
 }
