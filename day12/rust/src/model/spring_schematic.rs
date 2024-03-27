@@ -7,6 +7,13 @@ pub struct SpringSchematic {
 }
 
 impl SpringSchematic {
+    pub fn new(states: SpringStates, damaged_groups: Vec<usize>) -> SpringSchematic {
+        SpringSchematic {
+            states,
+            damaged_groups,
+        }
+    }
+
     pub fn from_text(text: &str) -> SpringSchematic {
         let components: Vec<&str> = text.split_whitespace().collect();
 
@@ -32,6 +39,13 @@ impl SpringSchematic {
 }
 
 impl SpringSchematic {
+    pub fn states(&self) -> &SpringStates {
+        &self.states
+    }
+    pub fn damaged_groups(&self) -> &Vec<usize> {
+        &self.damaged_groups
+    }
+
     pub fn find_damaged_combinations(&self) -> usize {
         let states = &self.states;
         let permutations = find_possible_state_arrangements(states);
