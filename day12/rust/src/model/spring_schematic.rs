@@ -1,4 +1,10 @@
-use super::{find_possible_state_arrangements, spring_states_to_groups, SpringState, SpringStates};
+use std::collections::HashMap;
+
+use super::{SpringState, SpringStates};
+
+type StateGroupSpaceIndex = (usize, usize, usize);
+
+type Cache = HashMap<StateGroupSpaceIndex, usize>;
 
 #[derive(Debug)]
 pub struct SpringSchematic {
@@ -39,36 +45,74 @@ impl SpringSchematic {
 }
 
 impl SpringSchematic {
-    pub fn states(&self) -> &SpringStates {
+    pub fn get_states(&self) -> &SpringStates {
         &self.states
     }
-    pub fn damaged_groups(&self) -> &Vec<usize> {
+    pub fn get_damaged_groups(&self) -> &Vec<usize> {
         &self.damaged_groups
     }
 
     pub fn find_damaged_combinations(&self) -> usize {
-        let states = &self.states;
-        let permutations = find_possible_state_arrangements(states);
+        let mut cache = HashMap::new();
 
-        if permutations.len() == 0 {
-            return 1;
+        self.get_damaged_combinations((0, 0, 0), &mut cache)
+    }
+
+    fn get_damaged_combinations(&self, indices: StateGroupSpaceIndex, cache: &mut Cache) -> usize {
+        let cache_hit = cache.get(&indices);
+        if cache_hit.is_some() {
+            return *cache_hit.unwrap();
         }
 
-        permutations
-            .iter()
-            .filter(|state| is_arrangement_valid(state, &self.damaged_groups))
-            .count()
+        let states = &self.states;
+        let groups = &self.damaged_groups;
+        let (state_index, group_index, space) = indices;
+
+        let group_length = *groups.get(group_index).unwrap_or(&0);
+
+        if state_index >= states.len() {
+            let is_last_group = group_index == groups.len() - 1;
+            let has_room = space == group_length;
+
+            if is_last_group && has_room {
+                return 1;
+            }
+
+            let past_last_group = group_index >= groups.len();
+
+            if past_last_group && space == 0 {
+                return 1;
+            }
+
+            return 0;
+        }
+
+        let mut combinations = 0;
+        let current_state = *states.get(state_index).unwrap();
+
+        for target_state in [SpringState::Damaged, SpringState::Operational] {
+            if current_state != target_state && current_state != SpringState::Unknown {
+                continue;
+            }
+
+            combinations += match target_state {
+                SpringState::Operational if space == group_length => {
+                    self.get_damaged_combinations((state_index + 1, group_index + 1, 0), cache)
+                }
+                SpringState::Operational if space == 0 => {
+                    self.get_damaged_combinations((state_index + 1, group_index, 0), cache)
+                }
+                SpringState::Damaged => {
+                    self.get_damaged_combinations((state_index + 1, group_index, space + 1), cache)
+                }
+                _ => 0,
+            };
+        }
+
+        cache.insert(indices, combinations);
+
+        combinations
     }
-}
-
-fn is_arrangement_valid(states: &SpringStates, damaged_groups: &Vec<usize>) -> bool {
-    let state_groups = spring_states_to_groups(states);
-
-    if state_groups.len() != damaged_groups.len() {
-        return false;
-    }
-
-    state_groups.iter().zip(damaged_groups).all(|(a, b)| a == b)
 }
 
 #[cfg(test)]
@@ -121,14 +165,5 @@ mod tests {
 
         let result = schematic.find_damaged_combinations();
         assert_eq!(result, 10);
-    }
-
-    #[test]
-    fn converts_spring_states_to_groups() {
-        let input = "..#..# 1,1";
-        let schematic = SpringSchematic::from_text(input);
-
-        let result = spring_states_to_groups(&schematic.states);
-        assert_eq!(result, vec![1, 1])
     }
 }

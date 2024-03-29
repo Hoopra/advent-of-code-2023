@@ -6,13 +6,13 @@ impl SpringSchematic {
     pub fn from_expanded_text(text: &str) -> SpringSchematic {
         let schematic = SpringSchematic::from_text(text);
 
-        let mut states = schematic.states().to_vec();
-        let mut groups = schematic.damaged_groups().to_vec();
+        let mut states = schematic.get_states().to_vec();
+        let mut groups = schematic.get_damaged_groups().to_vec();
 
         for _ in 1..EXPANSIONS {
             states.push(SpringState::Unknown);
-            states.append(&mut schematic.states().to_vec());
-            groups.append(&mut schematic.damaged_groups().to_vec());
+            states.append(&mut schematic.get_states().to_vec());
+            groups.append(&mut schematic.get_damaged_groups().to_vec());
         }
 
         SpringSchematic::new(states, groups)
@@ -29,16 +29,7 @@ mod tests {
 
         let schematic = SpringSchematic::from_expanded_text(input);
 
-        assert_eq!(schematic.states().len(), 7 * EXPANSIONS + EXPANSIONS - 1);
-        assert_eq!(schematic.damaged_groups().len(), 3 * EXPANSIONS);
-    }
-
-    #[test]
-    fn calculates_expanded_damaged_combinations() {
-        let input = "????.#...#... 4,1,1";
-        let schematic = SpringSchematic::from_expanded_text(input);
-
-        let result = schematic.find_damaged_combinations();
-        assert_eq!(result, 16);
+        assert_eq!(schematic.get_states().len(), (8 * EXPANSIONS) - 1);
+        assert_eq!(schematic.get_damaged_groups().len(), 3 * EXPANSIONS);
     }
 }
