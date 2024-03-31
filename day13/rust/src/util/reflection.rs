@@ -3,10 +3,6 @@ type RowPair = (usize, usize);
 pub fn find_reflection(pairs: &Vec<RowPair>, max_index: usize) -> Option<usize> {
     let candidates = find_reflections(pairs, max_index);
 
-    if candidates.len() > 1 {
-        println!("reflection candidates: {:?}", candidates);
-    }
-
     candidates.get(0).map(|value| *value)
 }
 

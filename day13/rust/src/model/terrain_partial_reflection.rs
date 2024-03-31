@@ -38,11 +38,6 @@ impl TerrainMap {
             })
             .collect();
 
-        // println!(
-        //     "rows: {:?}, original: {}, filtered: {:?}",
-        //     rows, original_row, filtered
-        // );
-
         filtered
     }
 
@@ -62,11 +57,6 @@ impl TerrainMap {
                 false => None,
             })
             .collect();
-
-        // println!(
-        //     "cols: {:?}, original: {}, filtered: {:?}",
-        //     cols, original_col, filtered
-        // );
 
         filtered
     }
