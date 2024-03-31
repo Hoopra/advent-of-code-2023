@@ -1,5 +1,5 @@
 #[derive(Clone, Copy, PartialEq)]
-pub enum Feature {
+pub enum TerrainFeature {
     Ash,
     Rock,
 }

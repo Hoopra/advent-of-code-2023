@@ -1,13 +1,9 @@
-use std::{collections::HashMap, vec};
+use std::collections::HashMap;
 
-use super::{Feature, TerrainCollection};
-
-type Position = (usize, usize);
-
-type RowPair = Position;
+use super::{Position, TerrainCollection, TerrainFeature};
 
 pub struct TerrainMap {
-    layout: HashMap<Position, Feature>,
+    layout: HashMap<Position, TerrainFeature>,
     size: (usize, usize),
 }
 
@@ -19,8 +15,8 @@ impl TerrainMap {
         for (y, line) in text.lines().enumerate() {
             for (x, symbol) in line.chars().enumerate() {
                 let feature = match symbol {
-                    '.' => Feature::Ash,
-                    _ => Feature::Rock,
+                    '.' => TerrainFeature::Ash,
+                    _ => TerrainFeature::Rock,
                 };
 
                 layout.insert((x, y), feature);
@@ -35,7 +31,7 @@ impl TerrainMap {
 }
 
 impl TerrainMap {
-    fn rows(&self) -> Vec<TerrainCollection> {
+    pub fn rows(&self) -> Vec<TerrainCollection> {
         let mut result = vec![];
         let (x_max, y_max) = self.size;
 
@@ -53,7 +49,7 @@ impl TerrainMap {
         result
     }
 
-    fn cols(&self) -> Vec<TerrainCollection> {
+    pub fn cols(&self) -> Vec<TerrainCollection> {
         let mut result = vec![];
         let (x_max, y_max) = self.size;
 
@@ -71,70 +67,9 @@ impl TerrainMap {
         result
     }
 
-    fn find_row_pairs(&self) -> Vec<RowPair> {
-        find_pairs(&self.rows())
+    pub fn size(&self) -> (usize, usize) {
+        self.size
     }
-
-    fn find_col_pairs(&self) -> Vec<RowPair> {
-        find_pairs(&self.cols())
-    }
-
-    pub fn find_reflecting_row(&self) -> Option<usize> {
-        find_reflection(&self.find_row_pairs(), self.size.1 - 1)
-    }
-
-    pub fn find_reflecting_col(&self) -> Option<usize> {
-        find_reflection(&self.find_col_pairs(), self.size.0 - 1)
-    }
-}
-
-fn find_reflection(pairs: &Vec<RowPair>, max_index: usize) -> Option<usize> {
-    let candidate = pairs.iter().find(|(index_a, index_b)| {
-        if index_b - index_a != 1 {
-            return false;
-        }
-
-        is_reflection(*index_a, pairs, max_index)
-    });
-
-    match candidate {
-        Some((_, value)) => Some(*value),
-        None => None,
-    }
-}
-
-fn is_reflection(index: usize, pairs: &Vec<RowPair>, max_index: usize) -> bool {
-    for i in 1..(max_index - index) {
-        let upper = index + i + 1;
-
-        if i > index || upper > max_index {
-            continue;
-        }
-
-        if !pairs.contains(&(index - i, upper)) {
-            return false;
-        }
-    }
-
-    true
-}
-
-fn find_pairs(collection: &Vec<TerrainCollection>) -> Vec<RowPair> {
-    let mut result = vec![];
-    let num = collection.len();
-
-    for i in 0..num {
-        let first_row = collection.get(i).unwrap();
-
-        for j in (i + 1)..num {
-            let second_row = collection.get(j).unwrap();
-            if first_row == second_row {
-                result.push((i, j));
-            }
-        }
-    }
-
-    result
 }
 
 #[cfg(test)]
@@ -161,40 +96,5 @@ mod tests {
 
         assert_eq!(rows.len(), 7);
         assert_eq!(cols.len(), 9);
-    }
-
-    #[test]
-    fn finds_paired_rows() {
-        let input = "#.##..##.\n..#.##.#.\n##......#\n##......#\n..#.##.#.\n..##..##.\n#.#.##.#.";
-
-        let map = TerrainMap::from_text(input);
-
-        assert_eq!(map.find_row_pairs(), vec![(1, 4), (2, 3)]);
-    }
-
-    #[test]
-    fn finds_paired_cols() {
-        let input = "#.##..##.\n..#.##.#.\n##......#\n##......#\n..#.##.#.\n..##..##.\n#.#.##.#.";
-
-        let map = TerrainMap::from_text(input);
-
-        assert_eq!(map.find_col_pairs(), vec![(1, 8), (2, 7), (3, 6), (4, 5)]);
-    }
-
-    #[test]
-    fn finds_reflections() {
-        let input = "#.##..##.\n..#.##.#.\n##......#\n##......#\n..#.##.#.\n..##..##.\n#.#.##.#.";
-
-        let map = TerrainMap::from_text(input);
-
-        assert_eq!(map.find_reflecting_row(), None);
-        assert_eq!(map.find_reflecting_col(), Some(5));
-
-        let input = "#...##..#\n#....#..#\n..##..###\n#####.##.\n#####.##.\n..##..###\n#....#..#";
-
-        let map = TerrainMap::from_text(input);
-
-        assert_eq!(map.find_reflecting_row(), Some(4));
-        assert_eq!(map.find_reflecting_col(), None);
     }
 }
