@@ -69,12 +69,14 @@ You convince the reindeer to bring you the page; the page confirms that your HAS
 
 The book goes on to describe a series of 256 boxes numbered 0 through 255. The boxes are arranged in a line starting from the point where light enters the facility. The boxes have holes that allow light to pass from one box to the next all the way down the line.
 
+```
       +-----+  +-----+         +-----+
-
-Light | Box | | Box | ... | Box |
+Light | Box |  | Box |   ...   | Box |
 ----------------------------------------->
-| 0 | | 1 | ... | 255 |
-+-----+ +-----+ +-----+
+      |  0  |  |  1  |   ...   | 255 |
+      +-----+  +-----+         +-----+
+```
+
 Inside each box, there are several lens slots that will keep a lens correctly positioned to focus light passing through the box. The side of each box has a panel that opens to allow you to insert or remove lenses as necessary.
 
 Along the wall running parallel to the boxes is a large library containing lenses organized by focal length ranging from 1 through 9. The reindeer also brings you a small handheld label printer.
@@ -142,11 +144,11 @@ The slot number of the lens within the box: 1 for the first lens, 2 for the seco
 The focal length of the lens.
 At the end of the above example, the focusing power of each lens is as follows:
 
-rn: 1 (box 0) _ 1 (first slot) _ 1 (focal length) = 1
-cm: 1 (box 0) _ 2 (second slot) _ 2 (focal length) = 4
-ot: 4 (box 3) _ 1 (first slot) _ 7 (focal length) = 28
-ab: 4 (box 3) _ 2 (second slot) _ 5 (focal length) = 40
-pc: 4 (box 3) _ 3 (third slot) _ 6 (focal length) = 72
+rn: 1 (box 0) \* 1 (first slot) \* 1 (focal length) = 1
+cm: 1 (box 0) \* 2 (second slot) \* 2 (focal length) = 4
+ot: 4 (box 3) \* 1 (first slot) \* 7 (focal length) = 28
+ab: 4 (box 3) \* 2 (second slot) \* 5 (focal length) = 40
+pc: 4 (box 3) \* 3 (third slot) \* 6 (focal length) = 72
 So, the above example ends up with a total focusing power of 145.
 
 With the help of an over-enthusiastic reindeer in a hard hat, follow the initialization sequence. What is the focusing power of the resulting lens configuration?
