@@ -11,6 +11,7 @@ The contraption is aligned so that most of the beam bounces around the grid, but
 
 You note the layout of the contraption (your puzzle input). For example:
 
+```
 .|...\....
 |.-.\.....
 .....|-...
@@ -21,6 +22,8 @@ You note the layout of the contraption (your puzzle input). For example:
 .-.-/..|..
 .|....-|.\
 ..//.|....
+```
+
 The beam enters in the top-left corner from the left and heading to the right. Then, its behavior depends on what it encounters as it moves:
 
 If the beam encounters empty space (.), it continues in the same direction.
@@ -31,18 +34,22 @@ Beams do not interact with other beams; a tile can have many beams passing throu
 
 In the above example, here is how the beam of light bounces around the contraption:
 
-> |<<<\....
-> |v-.\^....
-> .v...|->>>
-> .v...v^.|.
-> .v...v^...
-> .v...v^..\
-> .v../2\\..
-> <->-/vv|..
-> .|<<<2-|.\
-> .v//.|.v..
-> Beams are only shown on empty tiles; arrows indicate the direction of the beams. If a tile contains beams moving in multiple directions, the number of distinct directions is shown instead. Here is the same diagram but instead only showing whether a tile is energized (#) or not (.):
+```
+>|<<<\....
+|v-.\^....
+.v...|->>>
+.v...v^.|.
+.v...v^...
+.v...v^..\
+.v../2\\..
+<->-/vv|..
+.|<<<2-|.\
+.v//.|.v..
+```
 
+Beams are only shown on empty tiles; arrows indicate the direction of the beams. If a tile contains beams moving in multiple directions, the number of distinct directions is shown instead. Here is the same diagram but instead only showing whether a tile is energized (#) or not (.):
+
+```
 ######....
 .#...#....
 .#...#####
@@ -53,6 +60,8 @@ In the above example, here is how the beam of light bounces around the contrapti
 ########..
 .#######..
 .#...#.#..
+```
+
 Ultimately, in this example, 46 tiles become energized.
 
 The light isn't energizing enough tiles to produce lava; to debug the contraption, you need to start by analyzing the current situation. With the beam starting in the top-left heading right, how many tiles end up being energized?
