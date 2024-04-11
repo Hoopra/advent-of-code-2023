@@ -1,6 +1,6 @@
 pub type Position = (usize, usize);
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum TravelDirection {
     N,
     E,

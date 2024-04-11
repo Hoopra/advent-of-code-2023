@@ -6,7 +6,7 @@ use super::{MapFeature, Position};
 
 pub struct Map {
     tiles: HashMap<Position, MapFeature>,
-    size: (usize, usize),
+    pub size: (usize, usize),
 }
 
 impl Map {

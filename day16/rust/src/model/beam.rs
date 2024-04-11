@@ -1,6 +1,6 @@
 use super::{MapFeature, Position, TravelDirection};
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Beam {
     pub travel_direction: TravelDirection,
     pub position: Option<Position>,
