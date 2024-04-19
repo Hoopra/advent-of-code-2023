@@ -20,7 +20,7 @@ pub fn find_shortest_path_in_graph(
     let mut came_from: HashMap<StateKey, QueueNode> = HashMap::new();
     let mut distance: HashMap<StateKey, u32> = HashMap::new();
 
-    let initial_state = QueueNode::new(0, start, Direction::S, 0);
+    let initial_state = QueueNode::new(0, start, Direction::None, 0);
 
     queue.push(initial_state);
     distance.insert(initial_state.into(), 0);
@@ -51,14 +51,19 @@ pub fn find_shortest_path_in_graph(
         let neighbors = current_node.find_connected_positions(current_direction);
 
         neighbors.iter().for_each(|(direction, neighbor_position)| {
-            let neighbor_node = graph.get(neighbor_position);
-            let steps = match direction == &current_direction {
+            let neighbor_node: Option<&GraphNode> = graph.get(neighbor_position);
+            let did_change_direction = direction == &current_direction;
+
+            let steps = match did_change_direction {
                 true => current_steps + 1,
                 false => 1,
             };
 
             let too_many_steps = steps > max_steps;
-            let too_few_steps = direction != &current_direction && steps < min_steps;
+            let too_few_steps = match current_direction != Direction::None {
+                true => !did_change_direction && current_steps < min_steps,
+                _ => false,
+            };
 
             if neighbor_node.is_none() || too_many_steps || too_few_steps {
                 return;
@@ -84,6 +89,8 @@ pub fn find_shortest_path_in_graph(
 
     let end_state = end_state.unwrap();
     let path = construct_path(&came_from, graph, start, &end_state);
+
+    // draw_path_in_graph(graph, &path);
 
     Some(
         path.iter()
@@ -116,6 +123,31 @@ fn construct_path<'a>(
     path
 }
 
+#[allow(dead_code)]
+fn draw_path_in_graph(graph: &Graph, path: &Vec<&GraphNode>) {
+    let (x_max, y_max) = graph.size;
+
+    let positions: Vec<Position> = path.iter().map(|value| value.position).collect();
+
+    for node in &positions {
+        println!("node: {:?}", node);
+    }
+
+    println!("");
+    for y in 0..=y_max {
+        for x in 0..=x_max {
+            let position = (x, y);
+
+            match positions.contains(&position) {
+                true => print!("X"),
+                _ => print!("{}", graph.get(&position).unwrap().value),
+            }
+        }
+        println!("");
+    }
+    println!("");
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -130,5 +162,20 @@ mod tests {
         assert_eq!(graph.size, (12, 12));
         assert_eq!(graph.len(), 169);
         assert_eq!(result, Some(102));
+    }
+
+    #[test]
+    fn finds_shortest_path_in_graph_with_minimum_steps() {
+        let text = "111111111111\n999999999991\n999999999991\n999999999991\n999999999991";
+
+        let graph = Graph::from_text(text);
+        let result = find_shortest_path_in_graph(&graph, (0, 0), graph.size, 4, 10);
+        assert_eq!(result, Some(71));
+
+        let text = "2413432311323\n3215453535623\n3255245654254\n3446585845452\n4546657867536\n1438598798454\n4457876987766\n3637877979653\n4654967986887\n4564679986453\n1224686865563\n2546548887735\n4322674655533";
+
+        let graph = Graph::from_text(text);
+        let result = find_shortest_path_in_graph(&graph, (0, 0), graph.size, 4, 10);
+        assert_eq!(result, Some(94));
     }
 }

@@ -39,6 +39,7 @@ impl GraphNode {
                 Direction::W => direction != &Direction::E,
                 Direction::N => direction != &Direction::S,
                 Direction::S => direction != &Direction::N,
+                _ => true,
             })
             .collect()
     }
