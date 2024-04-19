@@ -28,6 +28,7 @@ For example:
 1224686865563
 2546548887735
 4322674655533
+
 Each city block is marked by a single digit that represents the amount of heat loss if the crucible enters that block. The starting point, the lava pool, is the top-left city block; the destination, the machine parts factory, is the bottom-right city block. (Because you already start in the top-left block, you don't incur that block's heat loss unless you leave that block and then return to it.)
 
 Because it is difficult to keep the top-heavy crucible going in a straight line for very long, it can move at most three blocks in a single direction before it must turn 90 degrees left or right. The crucible also can't reverse direction; after entering each city block, it may only turn left, continue straight, or turn right.
@@ -47,6 +48,7 @@ One way to minimize heat loss is this path:
 12246868655<v
 25465488877v5
 43226746555v>
+
 This path never moves more than three consecutive blocks in the same direction and incurs a heat loss of only 102.
 
 Directing the crucible from the lava pool to the machine parts factory, but not moving more than three consecutive blocks in the same direction, what is the least heat loss it can incur?
