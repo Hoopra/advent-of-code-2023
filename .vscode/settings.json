@@ -23,27 +23,5 @@
   },
   "files.associations": {
     "stdio.h": "c"
-  },
-
-  "rust-analyzer.linkedProjects": [
-    "day1/rust/Cargo.toml",
-    "day2/rust/Cargo.toml",
-    "day3/rust/Cargo.toml",
-    "day4/rust/Cargo.toml",
-    "day5/rust/Cargo.toml",
-    "day6/rust/Cargo.toml",
-    "day7/rust/Cargo.toml",
-    "day8/rust/Cargo.toml",
-    "day9/rust/Cargo.toml",
-    "day10/rust/Cargo.toml",
-    "day11/rust/Cargo.toml",
-    "day12/rust/Cargo.toml",
-    "day13/rust/Cargo.toml",
-    "day14/rust/Cargo.toml",
-    "day15/rust/Cargo.toml",
-    "day16/rust/Cargo.toml",
-    "day17/rust/Cargo.toml",
-    "day18/rust/Cargo.toml",
-    "day19/rust/Cargo.toml"
-  ]
+  }
 }
