@@ -3,7 +3,7 @@ use std::fs::read_to_string;
 use crate::toy_boat::ToyBoat;
 
 pub fn parse_multiple_games() {
-    let (times, records) = parse_race_input("../input.txt");
+    let (times, records) = parse_race_input("input.txt");
     let mut product = 1;
 
     for index in 0..times.len() {

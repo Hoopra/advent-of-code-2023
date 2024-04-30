@@ -7,7 +7,7 @@ use std::fs::read_to_string;
 use workflow::{parse_workflows, WorkflowResult};
 
 fn main() {
-    let input = read_to_string("../input.txt").unwrap();
+    let input = read_to_string("input.txt").unwrap();
 
     solve_part_1(&input);
     solve_part_2(&input);

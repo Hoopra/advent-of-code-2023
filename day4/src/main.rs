@@ -6,7 +6,7 @@ use card_scores::get_all_card_scores;
 use card_winnings::get_total_cards_won;
 
 fn main() {
-    let file_path = "../input.txt";
+    let file_path = "input.txt";
     let score = get_all_card_scores(file_path);
 
     println!("total score: {score}");

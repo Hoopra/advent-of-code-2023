@@ -5,7 +5,7 @@ use std::fs::read_to_string;
 use model::SpringSchematic;
 
 fn main() {
-    let file_path = "../input.txt";
+    let file_path = "input.txt";
 
     solve_part_1(file_path);
     solve_part_2(file_path);

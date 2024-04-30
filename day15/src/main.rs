@@ -10,8 +10,8 @@ use lens::Lens;
 use crate::hash::{compute_hash_value, compute_hash_values};
 
 fn main() {
-    solve_part_1("../input.txt");
-    solve_part_2("../input.txt");
+    solve_part_1("input.txt");
+    solve_part_2("input.txt");
 }
 
 fn solve_part_1(file_path: &str) {

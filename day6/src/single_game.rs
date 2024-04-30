@@ -3,7 +3,7 @@ use std::fs::read_to_string;
 use crate::toy_boat::ToyBoat;
 
 pub fn parse_single_game() {
-    let (time, record) = parse_race_input("../input.txt");
+    let (time, record) = parse_race_input("input.txt");
 
     let number_of_beats = find_possible_record_beats(time, record);
 

@@ -10,7 +10,7 @@ use instruction::{
 use std::fs::read_to_string;
 
 fn main() {
-    let text = read_to_string("../input.txt").unwrap();
+    let text = read_to_string("input.txt").unwrap();
 
     solve_part_1(&text);
 

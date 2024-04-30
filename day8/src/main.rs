@@ -8,7 +8,7 @@ use part2::calculate_necessary_ghost_steps;
 use std::fs::read_to_string;
 
 fn main() {
-    let file_path = "../input.txt";
+    let file_path = "input.txt";
     let text = read_to_string(file_path).unwrap();
 
     let steps_taken = calculate_necessary_steps(&text);

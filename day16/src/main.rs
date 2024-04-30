@@ -8,8 +8,8 @@ use crate::energized::find_energized_tiles_from_position;
 use std::fs::read_to_string;
 
 fn main() {
-    solve_part_1("../input.txt");
-    solve_part_2("../input.txt");
+    solve_part_1("input.txt");
+    solve_part_2("input.txt");
 }
 
 fn solve_part_1(file_path: &str) {

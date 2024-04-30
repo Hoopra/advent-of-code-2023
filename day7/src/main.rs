@@ -8,7 +8,7 @@ use card_hand::CardHand;
 use card_hand_with_jokers::use_jokers_in_card_hands;
 
 fn main() {
-    let file_path = "../input.txt";
+    let file_path = "input.txt";
     let text = read_to_string(file_path).unwrap();
 
     score_cards_from_text_no_jokers(&text);

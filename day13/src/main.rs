@@ -5,7 +5,7 @@ use model::TerrainMap;
 use std::fs::read_to_string;
 
 fn main() {
-    let text = read_to_string("../input.txt").unwrap();
+    let text = read_to_string("input.txt").unwrap();
 
     let map_texts: Vec<&str> = text.split("\n\n").collect();
 

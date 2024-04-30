@@ -4,7 +4,7 @@ use engine::Engine;
 use std::fs::read_to_string;
 
 fn main() {
-    let file_path = "../input.txt";
+    let file_path = "input.txt";
     let schematic = read_to_string(file_path).unwrap();
 
     let engine = Engine::new(schematic);

@@ -3,7 +3,7 @@ use std::fs::read_to_string;
 type NumberLine = Vec<i32>;
 
 fn main() {
-    let file_path = "../input.txt";
+    let file_path = "input.txt";
     let text = read_to_string(file_path).unwrap();
 
     extrapolate_last(&text);
