@@ -18,6 +18,7 @@ The Elves responsible for water filtering operations took a snapshot of the bric
 2,0,5~2,2,5
 0,1,6~2,1,6
 1,1,8~1,1,9
+
 Each line of text in the snapshot represents the position of a single brick at the time the snapshot was taken. The position is given as two x,y,z coordinates - one for each end of the brick - separated by a tilde (~). Each brick is made up of a single straight line of cubes, and the Elves were even careful to choose a time for the snapshot that had all of the free-falling bricks at integer positions above the ground, so the whole snapshot is aligned to a three-dimensional cube grid.
 
 A line like 2,2,2~2,2,2 means that both ends of the brick are at the same coordinate - in other words, that the brick is a single cube.
