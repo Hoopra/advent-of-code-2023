@@ -26,22 +26,51 @@ impl Brick {
         self.start.2 == 1 || self.end.2 == 1
     }
 
-    pub fn move_down_one(&mut self) {
-        self.start.2 -= 1;
-        self.end.2 -= 1;
-    }
-
-    pub fn is_resting_on_other(&self, other: &Vec<Brick>) -> bool {
-        self.find_overlapping(other)
-            .iter()
-            .any(|other| self.is_on_top_of(other))
-    }
-
     pub fn is_on_top_of(&self, other: &Brick) -> bool {
         let least_self = min(self.start.2, self.end.2);
         let greatest_other = max(other.start.2, other.end.2);
 
         least_self - greatest_other == 1
+    }
+
+    pub fn find_available_coordinate_below<'a>(&self, other: &'a Vec<Brick>) -> isize {
+        let least_self = min(self.start.2, self.end.2);
+
+        let coordinate = self
+            .find_overlapping(other)
+            .iter()
+            .fold(0, |previous: isize, next| {
+                let greatest_next = max(next.start.2, next.end.2);
+
+                if greatest_next >= least_self {
+                    return previous;
+                }
+
+                match greatest_next > previous {
+                    true => greatest_next,
+                    _ => previous,
+                }
+            });
+
+        coordinate + 1
+    }
+
+    pub fn move_to_z(&mut self, z: isize) {
+        let Brick { start, end, .. } = self;
+
+        let diff = start.2 - end.2;
+        let diff = if diff > 0 { diff } else { -diff };
+
+        match start.2 > end.2 {
+            true => {
+                end.2 = z;
+                start.2 = z + diff;
+            }
+            _ => {
+                start.2 = z;
+                end.2 = z + diff;
+            }
+        }
     }
 
     pub fn find_overlapping<'a>(&self, other: &'a Vec<Brick>) -> Vec<&'a Brick> {

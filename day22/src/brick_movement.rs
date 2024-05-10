@@ -19,9 +19,8 @@ pub fn move_bricks_to_rest(bricks: Vec<Brick>) -> Vec<Brick> {
     while not_resting.len() > 0 {
         let mut brick = not_resting.pop().unwrap();
 
-        while !brick.is_resting_on_other(&resting) && !brick.is_resting_on_ground() {
-            brick.move_down_one()
-        }
+        let z = brick.find_available_coordinate_below(&resting);
+        brick.move_to_z(z);
 
         resting.push(brick);
     }
