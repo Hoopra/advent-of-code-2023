@@ -34,6 +34,7 @@ For example:
 #.###.###.#.###.#.#v###
 #.....###...###...#...#
 #####################.#
+
 You're currently on the single path tile in the top row; your goal is to reach the single path tile in the bottom row. Because of all the mist from the waterfall, the slopes are probably quite icy; if you step onto a slope tile, your next step must be downhill (in the direction the arrow is pointing). To make sure you have the most scenic hike possible, never step onto the same tile twice. What is the longest hike you can take?
 
 In the example above, the longest hike you can take is marked with O, and your starting position is marked S:
@@ -61,6 +62,7 @@ In the example above, the longest hike you can take is marked with O, and your s
 #.###.###.#.###.#.#O###
 #.....###...###...#OOO#
 #####################O#
+
 This hike contains 94 steps. (The other possible hikes you could have taken were 90, 86, 82, 82, and 74 steps long.)
 
 Find the longest hike you can take through the hiking trails listed on your map. How many steps long is the longest hike?
