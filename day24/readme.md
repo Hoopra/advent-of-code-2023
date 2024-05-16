@@ -12,6 +12,7 @@ Due to strong, probably-magical winds, the hailstones are all flying through the
 20, 25, 34 @ -2, -2, -4
 12, 31, 28 @ -1, -2, -1
 20, 19, 15 @ 1, -5, -3
+
 Each line of text corresponds to the position and velocity of a single hailstone. The positions indicate where the hailstones are right now (at time 0). The velocities are constant and indicate exactly how far each hailstone will move in one nanosecond.
 
 Each line of text uses the format px py pz @ vx vy vz. For instance, the hailstone specified by 20, 19, 15 @ 1, -5, -3 has initial X position 20, Y position 19, Z position 15, X velocity 1, Y velocity -5, and Z velocity -3. After one nanosecond, the hailstone would be at 21, 14, 12.
@@ -61,6 +62,7 @@ Hailstones' paths crossed in the past for hailstone B.
 Hailstone A: 12, 31, 28 @ -1, -2, -1
 Hailstone B: 20, 19, 15 @ 1, -5, -3
 Hailstones' paths crossed in the past for both hailstones.
+
 So, in this example, 2 hailstones' future paths cross inside the boundaries of the test area.
 
 However, you'll need to search a much larger test area if you want to see if any hailstones might collide. Look for intersections that happen with an X and Y position each at least 200000000000000 and at most 400000000000000. Disregard the Z axis entirely.
